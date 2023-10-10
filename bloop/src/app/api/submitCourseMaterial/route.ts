@@ -1,39 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import promiseFs from "node:fs/promises";
-import fs from "node:fs";
 import path from "node:path";
 
 import { tempPath } from "@/config/temp";
+import ingestQueue from "@/queue/ingest";
+import ingestData from "@/actions/ingestData";
 
 type FileWritePromise = Promise<unknown>;
 
-const downloadWebPageToFile = async (url: string): FileWritePromise => {
-  const name = url.split("/").pop() || "web-url.html";
-  const res = await fetch(url);
-  if (!(res.status === 200) || !res.body) throw new Error("Failed to download web page");
-
-  const writeStream = fs.createWriteStream(path.join(tempPath, name));
-
-  const stream = new WritableStream({
-    write(chunk) {
-      writeStream.write(chunk);
-    }
-  })
-  return res.body.pipeTo(stream);
-}
+export const activeJob: {
+  state: "inactive" | "active" | "done";
+  job?: Promise<unknown>
+} = { state: "inactive"};
 
 export async function POST(request: NextRequest) {
-  console.log(tempPath);
+  console.log("Got post");
 
   const data = await request.formData();  
 
   const fileWritePromises: FileWritePromise[] = [];
-
-  const links = data.getAll('links[]') as unknown as string[];
-  fileWritePromises.concat(
-    links?.map(l => downloadWebPageToFile(l))
-  );
 
   const files = data.getAll('files[]') as unknown as FileList;
   if (files) {
@@ -52,11 +38,17 @@ export async function POST(request: NextRequest) {
 
   const texts = data.getAll('texts[]') as unknown as string[];
   fileWritePromises.concat(
-    texts?.map((t, i) => promiseFs.writeFile(path.join(tempPath, `raw-text-file-${i}`), t))
+    texts?.map((t, i) => promiseFs.writeFile(path.join(tempPath, `raw-text-file-${i}.txt`), t))
   );
   
   await Promise.all(fileWritePromises);
 
-
+  activeJob.state = "active";
+  activeJob.job = ingestData({ path: tempPath, links: data.getAll('links[]') as unknown as string[]}).then(
+    () => {
+      activeJob.state = "done";
+      activeJob.job = undefined;
+    }
+  );
   return NextResponse.json({ success: true })
 }
