@@ -30,7 +30,7 @@ const Links = () => {
       </li>
     ))}
     </ul>
-    <button className="btn btn-sm btn-success" onClick={append} type="button">Add link</button>
+    <button className="btn btn-sm btn-success" onClick={() => append('')} type="button">Add link</button>
   </div>
 }
 

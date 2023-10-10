@@ -2,10 +2,11 @@
 
 import Link from "next/link"
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { CourseData, submitCourseMaterials } from "@/actions/submitCourseMaterials";
+
 import Links from "./links";
 import Texts from "./texts";
 import Files from "./files";
+import { CourseData } from "@/types/formData";
 
 export default function Home() {
   const methods = useForm<CourseData>();
@@ -23,8 +24,6 @@ export default function Home() {
         body.append(entry, data[entry] as never);
       }
     }
-
-    console.log(...body);
 
     const response = await fetch('/api/submitCourseMaterial', {
       method: "POST",
