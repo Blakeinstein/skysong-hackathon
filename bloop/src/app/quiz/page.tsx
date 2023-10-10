@@ -1,5 +1,7 @@
 'use client';
 
+import DashLink from "@/components/dashlink";
+import Link from "next/link";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 
 export type QuizGenerateRequest = {
@@ -15,6 +17,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-24">
+      <DashLink />
       <h1 className='text-5xl'>Generate a quiz</h1>
       <div className='flex flex-col gap-2'>
         <FormProvider {...methods}>

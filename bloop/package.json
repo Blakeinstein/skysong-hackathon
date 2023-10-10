@@ -3,22 +3,21 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently 'next dev' 'quirrel'",
+    "dev": "next dev",
     "build": "next build",
-    "start": "concurrently 'next start' 'quirrel'",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@iconify/react": "^4.1.1",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@pinecone-database/pinecone": "^1.1.1",
     "@prisma/client": "^5.4.1",
     "clsx": "^2.0.0",
-    "concurrently": "^8.2.1",
     "langchain": "^0.0.164",
     "next": "13.5.4",
     "pdf-parse": "^1.1.1",
     "puppeteer": "^21.3.8",
-    "quirrel": "^1.14.1",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.47.0"

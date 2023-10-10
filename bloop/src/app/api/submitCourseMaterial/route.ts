@@ -6,6 +6,7 @@ import path from "node:path";
 import { tempPath } from "@/config/temp";
 import ingestQueue from "@/queue/ingest";
 import ingestData from "@/actions/ingestData";
+import { revalidatePath } from "next/cache";
 
 type FileWritePromise = Promise<unknown>;
 
@@ -48,6 +49,7 @@ export async function POST(request: NextRequest) {
     () => {
       activeJob.state = "done";
       activeJob.job = undefined;
+      revalidatePath('/');
     }
   );
   return NextResponse.json({ success: true })
