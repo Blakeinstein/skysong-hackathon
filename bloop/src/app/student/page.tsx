@@ -1,10 +1,6 @@
 import Link from "next/link"
 
 export default function Home() {
-  const reset = () => {
-    console.log("reset attempt");
-  };
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-24">
       <h1 className='text-5xl'>Welcome!</h1>
