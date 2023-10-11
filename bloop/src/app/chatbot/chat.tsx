@@ -3,12 +3,10 @@
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Icon } from '@iconify/react';
-import Image from 'next/image';
+
 import UserMessage from "./userMessage";
 import AiMessage from "./aiMessage";
-
 import { Message } from "@/types/chat";
-import Link from "next/link";
 import DashLink from "@/components/dashlink";
 
 const Chat = () => {
@@ -36,25 +34,32 @@ const Chat = () => {
 
     setLoading(false);
 
-    setMessages([...history, {
-      isUserMessage: true,
-      data: data.message,
-    }, {
+    setMessages([{
       isUserMessage: false,
       data: apiResponse.text as unknown as string,
       sourceDocs: apiResponse.sourceDocuments,
-    }]);
+    }, {
+      isUserMessage: true,
+      data: data.message,
+    }, ...history]);
   }
 
-  return <div className="h-full flex flex-col gap-4 justify-end p-4 border-2 shadow-xl border-black">
-    <div className="grow">
-      <DashLink />
+  return <div className="h-full flex flex-col-reverse gap-4 p-4 border-2 shadow-xl border-black overflow-scroll">
+    <form className="join" onSubmit={handleSubmit(sendMessage)}>
+      <input className="join-item input input-bordered grow" type="text" {...register('message')} />
+      <button className="join-item btn btn-primary">
+        <Icon icon="mingcute:send-fill" className="w-6 h-6"/>
+      </button>
+    </form>
+    <div className="grid place-items-center">
+      {loading && <span className="loading loading-dots loading-lg" />}
     </div>
-    <AiMessage>What would you like to know today?</AiMessage>
     {messages.map((message, i) => {
       if (message.isUserMessage) {
         return (
-          <UserMessage key={`user-${i}`}>{message.data}</UserMessage>
+          <UserMessage key={`user-${i}`}>
+            {message.data}
+          </UserMessage>
         )
       } else {
         return (
@@ -64,15 +69,10 @@ const Chat = () => {
         )
       }
     })}
-    <div className="grid place-items-center">
-      {loading && <span className="loading loading-dots loading-lg" />}
+    <AiMessage>How can I help you with the course today?</AiMessage>
+    <div className="grow">
+      <DashLink />
     </div>
-    <form className="join" onSubmit={handleSubmit(sendMessage)}>
-      <input className="join-item input input-bordered grow" type="text" {...register('message')} />
-      <button className="join-item btn btn-primary">
-        <Icon icon="mingcute:send-fill" className="w-6 h-6"/>
-      </button>
-    </form>
   </div>
 }
 

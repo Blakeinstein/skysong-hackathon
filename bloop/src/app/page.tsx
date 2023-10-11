@@ -21,7 +21,7 @@ const Home = async () => {
   
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-24">
-      <h1 className='text-5xl'>Welcome!</h1>
+      <h1 className='text-5xl'>Welcome to blob!</h1>
       <div className='flex flex-col gap-2'>
         <Link className='btn' href="/instructor">Upload documents</Link>
         <div className="flex gap-2">

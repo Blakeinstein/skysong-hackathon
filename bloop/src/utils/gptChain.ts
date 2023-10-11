@@ -20,8 +20,8 @@ Helpful answer in markdown:`;
 
 export const makeChain = (vectorstore: PineconeStore) => {
   const model = new ChatOpenAI({
-    temperature: 0,
-    modelName: 'gpt-3.5-turbo',
+    temperature: 1,
+    modelName: 'gpt-4',
   });
 
   const chain = ConversationalRetrievalQAChain.fromLLM(
