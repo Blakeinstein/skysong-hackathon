@@ -35,7 +35,6 @@ const ingestData = async (data: {
 
     const docs = await textSplitter.splitDocuments(rawDocs);
 
-    console.log(docs);
     if (data.links) {
       try {
         const linkDocs = await Promise.all(

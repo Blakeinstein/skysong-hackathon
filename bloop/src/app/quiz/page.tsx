@@ -4,8 +4,8 @@ import DashLink from "@/components/dashlink";
 import MarkdownMessage from "@/components/markdownMessage";
 import Link from "next/link";
 import { useState } from "react";
-import { FormProvider, SubmitHandler, set, useForm } from "react-hook-form";
-import Markdown from "react-markdown";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { BaseResponse } from "serpapi";
 
 export type QuizGenerateRequest = {
   topics: string,
@@ -13,10 +13,22 @@ export type QuizGenerateRequest = {
   count: number
 }
 
+
+
+const parseSuggestions = (res: BaseResponse) => {
+  return res["related_questions"].map((question: Record<string, string>) => ({
+    title: question["question"],
+    description: question["snippet"],
+    link: question["link"],
+  }))
+}
+
 export default function Home() {
   const methods = useForm<QuizGenerateRequest>();
 
   const [quizData, setQuizData] = useState<string>('');
+
+  const [topicSuggestions, setTopicSuggestions] = useState<ReturnType<typeof parseSuggestions>[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -24,16 +36,21 @@ export default function Home() {
     const { topics, constraints, count } = data;
 
     setLoading(true);
-    const result = await fetch("/api/chat", {
-      method: "POST",
-      body: JSON.stringify({
-        message: `Can you generate ${count} number of questions about ${topics} with 1 correct and 3 correct options` +
-        (constraints ? ` and ${constraints}?` : '?'),
-        history: [],
-      }),
-    }).then(res => res.json());
+    const [result, suggestions] = await Promise.all([
+      fetch("/api/chat", {
+        method: "POST",
+        body: JSON.stringify({
+          message: `Can you generate ${count} number of questions about ${topics} with 1 correct and 3 correct options` +
+          (constraints ? ` and ${constraints}?` : '?'),
+          history: [],
+        }),
+      }).then(res => res.json()),
+      fetch("/api/quiz?" + new URLSearchParams({ topics })).then(res => res.json()).then(parseSuggestions),
+    ]);
     
     setLoading(false);
+
+    setTopicSuggestions(suggestions);
 
     setQuizData(result.text);
   }
@@ -70,11 +87,26 @@ export default function Home() {
           </form>
         </FormProvider>
       </div>
-      {quizData && <div className="grow border-2 shadow-xl p-12 bg-white">
-        <MarkdownMessage>
-          {quizData}
-        </MarkdownMessage>
-      </div>}
+      <div className="grid grid-flow-row-dense grid-cols-3 grid-rows-1 gap-2 w-full p-12">
+        <div className={"p-12 col-span-2 bg-white" + (quizData && " border-2 shadow-xl")}>
+          <MarkdownMessage>
+            {quizData}
+          </MarkdownMessage>
+        </div>
+        <div className={"p-2 bg-white flex flex-col gap-2 items-center" + (quizData && " border-2 shadow-xl")}>
+          {topicSuggestions.map((topic, i) => (
+            <div className="card w-96 bg-base-100 shadow-xl" key={i}>
+              <div className="card-body">
+                <h2 className="card-title">{topic.title}</h2>
+                <p>{topic.description}</p>
+                <div className="card-actions justify-end">
+                  <a className="btn btn-primary" href={topic.link} target="_blank">Go to reference</a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </main>
   )
 }

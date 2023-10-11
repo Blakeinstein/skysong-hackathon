@@ -47,6 +47,9 @@ dependencies:
   remark-math:
     specifier: ^6.0.0
     version: 6.0.0
+  serpapi:
+    specifier: ^2.0.0
+    version: 2.0.0
 
 devDependencies:
   '@tailwindcss/typography':
@@ -4058,6 +4061,10 @@ packages:
     dependencies:
       lru-cache: 6.0.0
     dev: true
+
+  /serpapi@2.0.0:
+    resolution: {integrity: sha512-LKrIBrXWhZDmS1urFwB8e/T8omW2C7r7ZmW231aVBtMbfNx/p9pi5gkiScM/VSAcsyhX1q3oPeWCvbzQiiwaCg==}
+    dev: false
 
   /set-function-name@2.0.1:
     resolution: {integrity: sha512-tMNCiqYVkXIZgc2Hnoy2IvC/f8ezc5koaRFkCjrpWzGpCd3qbZXPzVy9MAZzK1ch/X0jvSkojys3oqJN0qCmdA==}

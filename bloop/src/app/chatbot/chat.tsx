@@ -16,10 +16,13 @@ const Chat = () => {
 
   const sendMessage: SubmitHandler<{ message: string }> = async (data) => {
     const history = [...messages];
-    setMessages([...history, {
-      isUserMessage: true,
-      data: data.message,
-    }]);
+    setMessages([
+      {
+        isUserMessage: true,
+        data: data.message,
+      },
+      ...history
+    ]);
 
     setLoading(true);
     reset();
